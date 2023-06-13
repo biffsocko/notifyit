@@ -60,3 +60,5 @@ while True:
         # Terminate the event loop when interrupted
         notifier.stop()
         break
+
+exit(0)        
