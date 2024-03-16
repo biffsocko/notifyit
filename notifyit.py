@@ -4,10 +4,10 @@
 # notifyit.py
 #
 # uses the kernel inotify facility.  It monitors a directory for the creation of a new file.
-# for more information on this facility READ: https://lwn.net/Articles/760714/ 
-# 
+# for more information on this facility READ: https://lwn.net/Articles/760714/
+#
 # NOTE: because this uses kernel facilities, it will not work on mounted
-# filesystems.  
+# filesystems.
 ############################################################################################
 
 import os
@@ -18,9 +18,7 @@ import pyinotify
 ########################################
 # Define the directory to monitor
 ########################################
-directory_to_watch = '/some/directory/path/'
-
-
+directory_to_watch = '/tmp/checkme'
 
 # Create a subclass of ProcessEvent to handle events
 class EventHandler(pyinotify.ProcessEvent):
@@ -50,15 +48,12 @@ except e :
 notifier = pyinotify.Notifier(wm, handler)
 
 # Start the event loop
-while True:
-    try:
-        # Process any events and update the status
-        notifier.process_events()
-        if notifier.check_events():
-            notifier.read_events()
-    except KeyboardInterrupt:
-        # Terminate the event loop when interrupted
-        notifier.stop()
-        break
+try:
+    notifier.loop()
+except KeyboardInterrupt:
+    # Terminate the event loop when interrupted
+    print("user exiting")
+finally:
+    notifier.stop()
 
-exit(0)        
+exit(0)    
