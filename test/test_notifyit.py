@@ -1,6 +1,6 @@
 #!/bin/env python3
-import os
 import types
+
 import pytest
 
 pyinotify = pytest.importorskip("pyinotify")   # skips everywhere pyinotify isn't installed
