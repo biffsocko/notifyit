@@ -30,30 +30,34 @@ class EventHandler(pyinotify.ProcessEvent):
         ##################################################################
        print("New file created:", event.pathname)
 
+def build_notifier(directory, handler=None):
+    # Initialize the WatchManager and EventHandler
+    wm = pyinotify.WatchManager()
 
-# Initialize the WatchManager and EventHandler
-wm = pyinotify.WatchManager()
-handler = EventHandler()
+    # Define the events to monitor
+    mask = pyinotify.IN_CLOSE_WRITE
 
-# Define the events to monitor
-mask = pyinotify.IN_CLOSE_WRITE
+    # Add the directory to the watch list.
+    # quiet=False makes a missing or unreadable directory raise instead of failing silently.
+    wm.add_watch(directory, mask, rec=True, quiet=False)
 
-# Add the directory to the watch list
-try:
-    wm.add_watch(directory_to_watch, mask, rec=True)
-except e :
-    print(e)
+    # Initialize the Notifier with the WatchManager and EventHandler
+    return pyinotify.Notifier(wm, handler or EventHandler())
 
-# Initialize the Notifier with the WatchManager and EventHandler
-notifier = pyinotify.Notifier(wm, handler)
 
-# Start the event loop
-try:
-    notifier.loop()
-except KeyboardInterrupt:
-    # Terminate the event loop when interrupted
-    print("user exiting")
-finally:
-    notifier.stop()
+def main():
+    notifier = build_notifier(directory_to_watch)
 
-exit(0)    
+    # Start the event loop
+    try:
+        notifier.loop()
+    except KeyboardInterrupt:
+        # Terminate the event loop when interrupted
+        print("user exiting")
+    finally:
+        notifier.stop()
+
+
+if __name__ == "__main__":
+    main()
+
