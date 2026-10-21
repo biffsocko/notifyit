@@ -15,7 +15,8 @@ import pyinotify
 ########################################
 # Define the directory to monitor
 ########################################
-directory_to_watch = '/tmp/checkme'
+directory_to_watch = "/tmp/checkme"
+
 
 # Create a subclass of ProcessEvent to handle events
 class EventHandler(pyinotify.ProcessEvent):
@@ -25,7 +26,8 @@ class EventHandler(pyinotify.ProcessEvent):
         # This method will be triggered when a file is closed after writing
         # this would be the place to add your own functionality.
         ##################################################################
-       print("New file created:", event.pathname)
+        print("New file created:", event.pathname)
+
 
 def build_notifier(directory, handler=None):
     # Initialize the WatchManager and EventHandler
@@ -57,4 +59,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

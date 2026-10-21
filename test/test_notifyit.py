@@ -3,7 +3,9 @@ import types
 
 import pytest
 
-pyinotify = pytest.importorskip("pyinotify")   # skips everywhere pyinotify isn't installed
+pyinotify = pytest.importorskip(
+    "pyinotify"
+)  # skips everywhere pyinotify isn't installed
 import notifyit
 
 
@@ -21,11 +23,12 @@ def test_missing_directory_raises(tmp_path):
 class Recorder(pyinotify.ProcessEvent):
     def my_init(self):
         self.seen = []
+
     def process_IN_CLOSE_WRITE(self, event):
         self.seen.append(event.pathname)
 
 
-def test_real_file_triggers_event(tmp_path):    # integration test, needs Linux
+def test_real_file_triggers_event(tmp_path):  # integration test, needs Linux
     rec = Recorder()
     notifier = notifyit.build_notifier(str(tmp_path), rec)
     target = tmp_path / "new.txt"
