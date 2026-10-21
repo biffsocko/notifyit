@@ -1,0 +1,35 @@
+name: Release
+on:
+  push:
+    tags: ["v*"]                  # v1.0.0, v1.2.3, ...
+
+permissions:
+  contents: read                  # default for every job below
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml   # run the whole CI pipeline
+
+  release:
+    needs: ci                     # only runs if every CI job passed
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write             # this job alone may create releases
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build tarball
+        run: |
+          git archive --format=tar.gz \
+            --prefix="notifyit-${GITHUB_REF_NAME}/" \
+            -o "notifyit-${GITHUB_REF_NAME}.tar.gz" HEAD
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "notifyit $GITHUB_REF_NAME" \
+            --generate-notes \
+            "notifyit-${GITHUB_REF_NAME}.tar.gz" \
+            notifyit.py
